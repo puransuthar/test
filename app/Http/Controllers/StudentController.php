@@ -14,8 +14,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        $students = Student::all();
-        return view('students.all', compact('students'));
+        return view('students.all');
     }
 
     /**
@@ -36,7 +35,31 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'phone' => 'required',
+            'profile' => 'mimes:jpg,jpeg,png',
+        ]);
+
+        if ($request->hasFile('profile')) {
+            $file = request()->file('profile');
+            $extension = $file->getClientOriginalExtension();
+            $filename = time() . '.' . $extension;
+            $file->move('profile/student_images/', $filename);
+        }
+
+        $student = new Student;
+        $student->first_name = $request->first_name;
+        $student->last_name = $request->last_name;
+        $student->phone = $request->phone;
+        $student->profile = $filename;
+        $student->save();
+
+        return response()->json([
+            'status' => 200,
+            'meessage' => 'Student Added Succesfully.'
+        ]);
     }
 
     /**
@@ -82,5 +105,11 @@ class StudentController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function fetch()
+    {
+        $students = Student::all();
+        return $students;
     }
 }

@@ -25,4 +25,5 @@ Route::post('/user-profile/update', 'ProfileController@update')->middleware('aut
 
 
 // Student related routes
+Route::get('/students/fetch', 'StudentController@fetch');
 Route::resource('students', 'StudentController');
